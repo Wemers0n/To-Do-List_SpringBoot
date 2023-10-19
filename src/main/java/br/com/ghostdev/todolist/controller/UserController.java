@@ -6,10 +6,9 @@ import br.com.ghostdev.todolist.entity.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -17,6 +16,23 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @GetMapping("/")
+    public ResponseEntity getAllUsers(){
+        var getUsers =  userRepository.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(getUsers);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity getIdUser(@PathVariable UUID id){
+        var getUserId = userRepository.findById(id).orElse(null);
+
+        if(getUserId == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário nao encontrado");
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(getUserId);
+        }
+    }
 
     @PostMapping("/")
     public ResponseEntity create(@RequestBody UserModel users){
